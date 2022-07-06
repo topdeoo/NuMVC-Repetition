@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+#IDE Settings
+
+/.vs
+
+/NuMVC/.vs
