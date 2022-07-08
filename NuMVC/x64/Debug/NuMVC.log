@@ -1,2 +1,3 @@
 ﻿  NuMVC.cpp
+d:\Documents\code\NuMVC-Repetition\NuMVC\NuMVC.h(104,20): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
   NuMVC.vcxproj -> d:\Documents\code\NuMVC-Repetition\NuMVC\x64\Debug\NuMVC.exe
