@@ -8,6 +8,8 @@
 #include <unordered_set>
 #include <set>
 #include <cmath>
+#include <fstream>
+#include <queue>
 using namespace std;
 
 typedef long long uint64;
@@ -48,15 +50,8 @@ struct cmp {
 	}
 };
 set<int, cmp> dscore_vec; // heap for high dscore of all vec
-struct cmp2 {
-	bool operator() (const int& a, const int& b)const {
-		if (dscore[a] == dscore[b]) {
-			return age[a] > age[b];
-		}
-		return dscore[a] > dscore[b];
-	}
-};
-set<int, cmp2> C_vec;
+
+unordered_set<int> C_vec;
 
 
 // sol struct

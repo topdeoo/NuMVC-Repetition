@@ -16,35 +16,6 @@ void init_instance() {
 	gama = v_num / 2;
 }
 
-void init() {
-	for (int i = 1;i <= v_num; i++) {
-		v_in_c[i] = 0;
-		dscore[i] = 0;
-		age[i] = 0;
-		conf_change[i] = 1;
-	}
-
-	for (int i = 0; i < e_num; i++) {
-		uncover_e.insert(i);
-		cin >> edge[i].v1 >> edge[i].v2;
-		weight[i] = 1;
-		dscore[edge[i].v1] += weight[i];
-		dscore[edge[i].v2] += weight[i];
-		v_neig[edge[i].v1].push_back(edge[i].v2);
-		v_neig[edge[i].v2].push_back(edge[i].v1);
-		v_edges[edge[i].v1].push_back(i);
-		v_edges[edge[i].v2].push_back(i);
-		weight_mean += weight[i];
-	}
-
-	weight_mean /= e_num;
-
-	for (int i = 1; i <= v_num; i++) {
-		dscore_vec.insert(i);
-	}
-	/*cout << dscore_vec.top() << endl;*/
-}
-
 void update_sol() {
 	for (int i = 1; i <= v_num; i++) {
 		best_v_in_c[i] = v_in_c[i];
@@ -60,14 +31,13 @@ void uncover(int e) {
 	uncover_e.insert(e);
 }
 
-unsigned randomSelect() {
-	e.seed(seeds);
-	uniform_int_distribution<unsigned> u(0, e_num);
-	return u(e);
+int randomSelect() {
+	srand(unsigned(time(NULL)));
+	return rand() % e_num;
 }
 
-void remove() {
-	int v = *(C_vec.begin());
+void remove(int v) {
+	c_size--;
 	C_vec.erase(v);
 	v_in_c[v] = 0;
 	dscore[v] = -dscore[v];
@@ -85,6 +55,7 @@ void remove() {
 }
 
 void add(int v) {
+	c_size++;
 	C_vec.insert(v);
 	v_in_c[v] = 1;
 	dscore[v] = -dscore[v];
@@ -119,20 +90,15 @@ void update_weight() {
 
 int select_vec(int idx) {
 	Edge e = edge[idx];
-	if (conf_change[e.v1])
-		return e.v1;
-	else if (conf_change[e.v2])
+	if (!conf_change[e.v1])
 		return e.v2;
-	else if (conf_change[e.v1] && conf_change[e.v2]) {
-		if (dscore[e.v1] > dscore[e.v2])
+	else if (!conf_change[e.v2])
+		return e.v1;
+	else {
+		if (dscore[e.v1] > dscore[e.v2] || (dscore[e.v1] == dscore[e.v2] && age[e.v1] > age[e.v2]))
 			return e.v1;
 		else
 			return e.v2;
-	}
-	else {
-		if (age[e.v1] > age[e.v2])
-			return e.v1;
-		return e.v2;
 	}
 }
 
@@ -164,23 +130,52 @@ void greedy_search() {
 	update_sol();
 }
 
+void find_max_dscore() {
+	int v = 0, maxn = -1000000;
+	for (int i = 1; i <= v_num; i++) {
+		if (v_in_c[i] == 0)continue;
+		if (dscore[i] > maxn)
+			v = i, maxn = dscore[i];
+	}
+	remove(v);
+}
+
+
+int find_remove_vec() {
+	int ret = 0;
+	int maxn = -100000;
+	for (int i = 1; i < v_num; i++) {
+		if (!v_in_c[i])continue;
+		if (dscore[i] > maxn)
+			ret = i, maxn = dscore[i];
+		else if (dscore[i] == maxn) {
+			if (age[i] > age[ret])
+				ret = i;
+		}
+	}
+	return ret;
+}
 
 void numvc() {
 	step = 1;
+	memset(age, 0, sizeof age);
 	while (step <= max_time) {
-		if (!uncover_e.empty()) {
+		if (uncover_e.empty()) {
 			update_sol();
 			if (c_size == optimal)
 				return;
-			remove();
+			find_max_dscore();
 			continue;
 		}
-
-		remove();
+		int v = find_remove_vec();
+		remove(v);
 		int idx = randomSelect();
+		if (uncover_e.find(idx) == uncover_e.end())
+			idx = *(uncover_e.begin());
+
 		int v_add = select_vec(idx);
 		add(v_add);
-		age[v_add] = step;
+		age[v] = age[v_add] = step;
 		update_weight();
 		step++;
 	}
