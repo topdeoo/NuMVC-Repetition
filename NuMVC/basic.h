@@ -46,12 +46,15 @@ unordered_map<int, vector<int>> v_edges;
 // For compare dscore
 struct cmp {
 	bool operator() (const int &a, const int &b) const {
+		if (dscore[a] == dscore[b])
+			return a > b;
 		return dscore[a] > dscore[b];
 	}
 };
 set<int, cmp> dscore_vec; // heap for high dscore of all vec
 
 unordered_set<int> C_vec;
+priority_queue<int, vector<int>, cmp> C_vec_dscore;
 
 
 // sol struct

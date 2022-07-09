@@ -35,7 +35,8 @@ int main(void) {
 	ios::sync_with_stdio(false);
 	cin.tie(nullptr);
 	// cin algorithm param
-	is.open("data.txt");
+	/*is.open("data.txt");*/
+	is.open("brock400-2.txt");
 
 	is >> max_time >> optimal >> seeds;
 	is >> v_num >> e_num;
@@ -51,12 +52,12 @@ int main(void) {
 		}
 	}
 
-	if(best_c_size + uncover_e.size() > optimal)
+	if(C_vec.size() + uncover_e.size() > optimal)
 		numvc();
 
 	cout << "MVC size is " << C_vec.size() << endl;
-	for (auto& i : C_vec)
-		cout << "Vec: " << i << endl;
+	//for (auto& i : C_vec)
+	//	cout << "Vec: " << i << endl;
 
 	return 0;
 }
